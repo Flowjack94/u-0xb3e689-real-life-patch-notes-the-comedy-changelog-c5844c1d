@@ -13,15 +13,27 @@ ENTRY = (
 )
 
 
+def validate_entry(text: str) -> str:
+    """A patch note must be a single line of 1-160 characters."""
+    if not (1 <= len(text) <= 160):
+        raise ValueError(
+            f"entry must be 1-160 chars, got {len(text)}"
+        )
+    if "\n" in text or "\r" in text:
+        raise ValueError("entry must be a single line")
+    return text
+
+
 def main() -> None:
+    entry = validate_entry(ENTRY)
     out = os.environ.get("MAKEFUN_OUTPUT", "/output/entry.txt")
     try:
         os.makedirs(os.path.dirname(out), exist_ok=True)
         with open(out, "w", encoding="utf-8") as f:
-            f.write(ENTRY)
+            f.write(entry)
     except OSError:
         pass
-    print(ENTRY)
+    print(entry)
 
 
 if __name__ == "__main__":
